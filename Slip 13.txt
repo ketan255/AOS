@@ -1,0 +1,82 @@
+Q.2
+ A) Write a C program that redirects standard output to a file output.txt. (use of dup and open system call).
+
+#include"stdio.h"
+#include"stdlib.h"
+#include"fcntl.h"
+#include"dirent.h"
+#include"unistd.h"
+int main()
+{
+int fds,fdi;
+fdi=open("d.txt",O_RDWR|O_CREAT,0666);
+if(fdi<0)
+{
+printf("unable open file");
+exit(0);
+}
+fds=dup(1);
+if(dup2(fdi,1)<0)
+{
+printf("enable to duplicate");
+exit(0);
+}
+printf("\n cya ");
+printf("\n abhi");
+printf("\n fuxk");
+close(fdi);
+fflush(stdout);
+dup2(fds,1);
+close(fds);
+printf("normal output");
+return 0;
+}
+
+
+B) Write a C program that behaves like a shell (command interpreter). It has its own prompt say “NewShell$”. Any normal shell command is executed from your shell by starting a child process to execute the system program corresponding to the command. It should additionally interpret the following command.
+i) typeline +10 <filename> - print first 10 lines of file
+ii) typeline -20 <filename> - print last 20 lines of file
+iii) typeline a <filename> - print all lines of file
+
+//c program to print given number of lines from beginning of a file
+//file name and number of lines must be supply as command line argument
+#include <stdio.h>
+int main(int argc, char * argv[])
+{
+FILE * fp; // file pointer
+char * line = NULL;
+int len = 0;
+int cnt = 0;
+if( argc < 3)
+{
+printf("Insufficient Arguments!!!\n");
+printf("Please use \"program-name file-name N\" format.\n");
+return -1;
+}
+// open file
+fp = fopen(argv[1],"r");
+// checking for file is exist or not
+if( fp == NULL )
+{
+printf("\n%s file can not be opened !!!\n",argv[1]);
+return 1;
+}
+// read lines from file one by one
+while (getline(&line, &len, fp) != -1)
+{
+cnt++;
+if ( cnt > atoi(argv[2]) )
+break;
+printf("%s",line); fflush(stdout);
+}
+// close file
+fclose(fp);
+return 0;
+}
+/*
+Output
+First Run:
+Terminal command : ./prg1 file1.txt
+Insufficient Arguments!!!
+Please use "program-name file-name N" format.
+Second Run:*/

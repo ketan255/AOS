@@ -1,0 +1,136 @@
+Q2
+A) Write a C program to create an unnamed pipe. The child process will write following three messages to pipe and parent process display it.
+Message1 = “Hello World”
+Message2 = “Hello SPPU”
+Message3 = “Linux is Funny”
+
+#include "stdio.h"
+#include "stdlib.h"
+#include "dirent.h"
+#include "fcntl.h"
+int main (int argc,char *argv[])
+{
+int i;
+int p[2],n;
+char buf[70];
+char *m1="1.Hellow";
+char *m2="2.Good buy";
+char *m3="3.Exit";
+if(pipe(p)<0)
+exit(0);
+n=fork();
+if(n<0)
+{
+printf("Fork failed");
+exit(0);
+}
+if(n==0)//chiled process
+{
+write(p[1],m1,70);
+write(p[1],m2,70);
+write(p[1],m3,70);
+}
+else
+{
+for(i=0;i<3;i++)
+{
+read(p[0],buf,70);
+printf("%s \n",buf);
+}
+}
+return 0;
+}
+/*
+Output=
+[fy@localhost ~]$ gedit assnew1.c
+[fy@localhost ~]$ gcc assnew1.c
+[fy@localhost ~]$ ./a.out
+1.Hellow
+2.Good buy
+3.Exit
+*/
+
+
+B)Write a C program to read all txt files (that is files that ends with .txt) in the current directory and merge them all to one txt file and returns a file descriptor for the new file
+
+#include"stdio.h"
+#include"stdlib.h"
+#include"dirent.h"
+#include"fcntl.h"
+#include"string.h"
+#include"sys/types.h"
+int main()
+{
+int fd,fd1,l;
+DIR *d;
+char ch;
+char new[100];
+struct dirent *de;
+printf("\n enter the file");
+scanf("%s",new);
+d=opendir(".");
+if(d==NULL)
+{
+printf("open dir unable");
+exit(0);
+}
+fd1=open(new,O_RDWR|O_CREAT,0666);
+if(fd1<0)
+{
+printf("unable open new file");
+exit(0);
+}
+while((de=readdir(d))!=NULL)
+{
+l=strlen(de->d_name);
+if(de->d_name[l-4]=='.'&& de->d_name[l-3]=='t'&& de->d_name[l-2]=='x'&& de->d_name[l-1]=='t')
+{
+fd=open(de->d_name,O_RDONLY);
+while(read(fd,&ch,1))
+write(fd1,&ch,1);
+}
+close(fd);
+}
+}
+
+
+/*fy@localhost abhi]$ gcc t1.c
+* [fy@localhost abhi]$ ./a.out
+*
+* enter the file bgs
+* [fy@localhost abhi]$ cat b1.txt
+* bhki
+* adjnjjhfj
+* 56459+45
+* [fy@localhost abhi]$ cat d.txt
+* cya
+* abhi
+* fuxk
+* [fy@localhost abhi]$ cat bgs
+* [fy@localhost abhi]$ ls
+* abhi armstrong.py b1.txt d endtxt.c fact.py lcm.py p2.c perfact.py pipe.c prime.py
+* a.out b1 bgs d.txt env.c gcd.py p1.c pal.py pipe1.c prime1.py t1.c
+* [fy@localhost abhi]$ cat bgs
+*
+*
+* [fy@localhost abhi]$ gedit t1.c
+* [fy@localhost abhi]$ gcc t1.c
+* [fy@localhost abhi]$ ./a.out
+*
+* enter the file bgs
+* [fy@localhost abhi]$ cat b1.txt
+* bhki
+* adjnjjhfj
+* 56459+45
+* [fy@localhost abhi]$ cat d.txt
+* cya
+* abhi
+* fuxk
+* [fy@localhost abhi]$ cat bgs
+* cya
+* abhi
+* fuxk
+* bhki
+* adjnjjhfj
+* 56459+45
+*/

@@ -1,0 +1,100 @@
+Q.2
+ A) Write a C program to create an unnamed pipe. Write following three messages to pipe and display it.
+Message1 = “Hello World”
+Message2 = “Hello SPPU”
+Message3 = “Linux is Funny”
+
+#include "stdio.h"
+#include "stdlib.h"
+#include "dirent.h"
+#include "fcntl.h"
+int main (int argc,char *argv[])
+{
+int i;
+int p[2],n;
+char buf[70];
+char *m1="1.Hellow";
+char *m2="2.Good buy";
+char *m3="3.Exit";
+if(pipe(p)<0)
+exit(0);
+n=fork();
+if(n<0)
+{
+printf("Fork failed");
+exit(0);
+}
+if(n==0)//chiled process
+{
+write(p[1],m1,70);
+write(p[1],m2,70);
+write(p[1],m3,70);
+}
+else
+{
+for(i=0;i<3;i++)
+{
+read(p[0],buf,70);
+printf("%s \n",buf);
+}
+}
+return 0;
+}
+/*
+Output=
+[fy@localhost ~]$ gedit assnew1.c
+[fy@localhost ~]$ gcc assnew1.c
+[fy@localhost ~]$ ./a.out
+1.Hellow
+2.Good buy
+3.Exit
+*/
+
+B) Write a C program that behaves like a shell (command interpreter). It has its own prompt say “NewShell$”.Any normal shell command is executed from your shell by starting a child process to execute the system program corresponding to the command. It should additionally interpret the following command.
+i) search f <pattern><filename> - search first occurrence of pattern in filename
+ii) search c <pattern><filename> - count no. of occurrences of pattern in filename
+iii) search a <pattern><filename> - search all occurrences of pattern in filename
+
+#include <stdio.h>
+ #include <string.h>
+int match(char [], char []);
+int main() 
+{ 
+char a[100], b[100];
+ int position;
+printf("Enter some text\n"); 
+gets(a);
+printf("Enter a string to find\n");
+ gets(b);
+position = match(a, b);
+if (position != -1) {
+ printf("Found at location: %d\n", position + 1); 
+} else {
+printf("Not found.\n"); 
+}
+return 0;
+ }
+int match(char text[], char pattern[]) { 
+int c, d, e, text_length, pattern_length, position = -1;
+text_length = strlen(text);
+ pattern_length = strlen(pattern);
+if (pattern_length > text_length) {
+ return -1; 
+}
+for (c = 0; c <= text_length - pattern_length; c++) {
+ position = e = c;
+for (d = 0; d < pattern_length; d++) { 
+if (pattern[d] == text[e]) { e++; }
+ else { break; } } 
+if (d == pattern_length) { return position; 
+} }
+return -1; 
+}
+
+/*
+Output 
+Enter some text
+computer programming is fun
+Enter a string to find
+programming is fun
+found at location 10*/

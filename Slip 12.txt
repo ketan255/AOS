@@ -1,0 +1,91 @@
+Q.2
+ A)Write a C program to send SIGALRM signal by child process to parent process and parent process make a provision to catch the signal and display alarm is fired.(Use Kill, fork, signal and sleep system call)
+
+#include "stdio.h"
+ #include "stdlib.h"
+ #include "fcntl.h"
+ #include "signal.h"
+ void sh(int sig)
+ {
+ printf("\n Signal cought");
+ fflush(stdout);
+ }
+ int main()
+ {
+ int n;
+ signal(SIGINT,sh);
+ n=fork();
+ if(n==0)
+ {
+ printf("\n in child process");
+ sleep(20);
+ kill(getppid(),SIGALRM);
+ printf("\n child existing");
+ sleep(5);
+ } else { 
+wait();
+ printf("\n parent exiting");
+ }
+ return 0;
+ }
+/*
+ output: [fy@localhost ~]$ gedit s12.c
+ [fy@localhost ~]$ gcc s12.c
+ [fy@localhost ~]$ ./a.out
+ ^C in child process
+ Signal cought
+ Alarm clock*/
+
+
+B) Write a C program to display all the files from current directory and its subdirectory whose size is greater than ’n’ Bytes Where n is accepted from user through command line.
+
+#include"stdio.h"
+#include"stdlib.h"
+#include"unistd.h"
+#include"fcntl.h"
+#include"sys/stat.h"
+#include"sys/types.h"
+#include"dirent.h"
+int main(int argc,char*argv[])
+{
+int n;
+DIR *d;
+struct dirent *de;
+struct stat s;
+printf("\n Enter value of n(size)=>");
+scanf("%d",&n);
+d=opendir(".");
+if(d==NULL)
+{
+printf("unable to open dir");
+exit(0);
+}
+while((de=readdir(d))!=NULL)
+{
+stat(de->d_name,&s);
+if(s.st_size>n)
+{
+printf("%s\t%d\n",de->d_name,s.st_size);
+}
+}
+return 0;
+}
+
+//OUTPUT
+/*
+[fy@localhost Rohit]$ gedit acc13.c
+[fy@localhost Rohit]$ gcc acc13.c;
+[fy@localhost Rohit]$ ./a.out
+Enter value of n(size)=>10000
+[fy@localhost Rohit]$ ./a.out
+Enter value of n(size)=>100
+. 269
+.. 4096
+practical1.c 837
+bhole 126
+practical2.c 660
+practical3.c 1055
+prac4.c 2028
+ass13.c 333
+acc13.c 471
+a.out 8680*/

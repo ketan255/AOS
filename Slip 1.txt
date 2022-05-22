@@ -1,0 +1,53 @@
+Q.2
+ A) Write a C program to find whether a given file is present in current directory or not. [
+
+#include "stdio.h"
+#include "stdlib.h"
+#include "unistd.h"
+#include "fcntl.h"
+#include "sys/types.h"
+#include "sys/stat.h"
+#include "dirent.h"
+int main()
+{
+char fname[30];
+int fd;
+printf("Enter file name=");
+scanf("%s",fname);
+fd=open(fname,O_RDONLY);
+if(fd==-1)
+{
+printf("File is not found");
+}
+else
+{
+printf("File is present in the current directory");
+return 0;
+}
+}
+/*
+Output:
+[fy@localhost Rohit AOS]$ gedit sleep1.c
+[fy@localhost Rohit AOS]$ gcc sleep1.c
+[fy@localhost Rohit AOS]$ ls
+a.out bhole d.txt p4.txt practical2.c sleep1.c
+a.txt b.txt p4ab.txt prac4.c practical3.c
+bb.txt c.txt p4a.txt practical1.c practicl2.txt
+[fy@localhost Rohit AOS]$ ./a.out bb
+Enter file name=bb.txt
+File is present in the current directory[fy@localhost Rohit AOS]$
+[fy@localhost Rohit AOS]$ ./a.out b
+Enter file name=b.txt
+File is present in the current directory[fy@localhost Rohit AOS]$ ./a.out
+Enter file name=ajhfsjA.C
+File is not found[fy@localhost Rohit AOS]$ ./a.out
+Enter file name=PRAC4.C
+File is not found[fy@localhost Rohit AOS]$
+[fy@localhost Rohit AOS]$
+[fy@localhost Rohit AOS]$
+[fy@localhost Rohit AOS]$ ./a.out
+Enter file name=prac4.c
+File is present in the current directory[
+*/
+
+

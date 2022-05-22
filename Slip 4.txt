@@ -1,0 +1,140 @@
+Q2 
+A)Write a C program to find file properties such as inode number, number of hard link, File permissions, File size, File access and modification time and so on of a given file using fstat() system call.
+
+#include"stdio.h"
+#include"unistd.h"
+#include"fcntl.h"
+#include"sys/stat.h"
+#include"sys/types.h"
+#include"time.h"
+int main()
+{
+char fn[100];
+char *s;
+int fd;
+struct stat s1;
+printf("Enter file name=");
+scanf("%s",fn);
+fd=open(fn,O_RDONLY);
+fstat(fd,&s1);
+printf("File name=%s\n",fn);
+printf("Inod number=%d\n",s1.st_ino);
+printf("number of hard link= %d\n",s1.st_nlink);
+printf("File size =%d\n",s1.st_size);
+printf("file Permision=");
+if(S_IRUSR & s1.st_mode)
+printf("Read");
+else
+printf("-------");
+if(S_IWUSR & s1.st_mode)
+printf("Write");
+else
+printf("-------");
+if(S_IXUSR & s1.st_mode)
+printf("Exicute");
+else
+printf("-------");
+//group of file
+if(S_IRGRP & s1.st_mode)
+printf("Read");
+else
+printf("-------");
+if(S_IWGRP & s1.st_mode)
+printf("Write");
+else
+printf("-------");
+if(S_IXGRP & s1.st_mode)
+printf("Exicute");
+else
+printf("-------");
+if(S_IROTH & s1.st_mode)
+printf("Read");
+else
+printf("-------");
+if(S_IWOTH & s1.st_mode)
+printf("Write");
+else
+printf("-------");
+if(S_IXOTH & s1.st_mode)
+printf("Exicute");
+else
+printf("-------");
+printf("\n");
+s=ctime(&s1.st_atime);
+printf("File access time =%s\n",s);
+s=ctime(&s1.st_mtime);
+printf("File modification time =%s\n",s);
+return 0;
+}
+/*
+[fy@localhost Rohit AOS]$ gedit sleep2.c
+[fy@localhost Rohit AOS]$ gcc sleep2.c
+[fy@localhost Rohit AOS]$ ls
+a.out bhole d.txt p4.txt practical2.c sleep1.c
+a.txt b.txt p4ab.txt prac4.c practical3.c sleep2.c
+bb.txt c.txt p4a.txt practical1.c practicl2.txt
+[fy@localhost Rohit AOS]$ ./a.out
+Enter file name=a.txt
+File name=a.txt
+Inod number=12128
+number of hard link= 1
+File size =3
+file Permision=ReadWrite-------ReadWrite-------Read--------------
+File access time =Tue Mar 22 16:21:14 2022
+File modification time =Tue Mar 22 16:16:11 2022
+[fy@localhost Rohit AOS]$ stat a.txt
+File: ‘a.txt’
+Size: 3 Blocks: 8 IO Block: 4096 regular file
+Device: fd02h/64770d Inode: 12128 Links: 1
+Access: (0664/-rw-rw-r--) Uid: ( 1000/ fy) Gid: ( 1000/ fy)
+Context: unconfined_u:object_r:user_home_t:s0
+Access: 2022-03-22 16:21:14.083568000 +0530
+Modify: 2022-03-22 16:16:11.773497000 +0530
+Change: 2022-03-22 16:21:14.083568565 +0530
+Birth: -
+*/
+
+B) Write a C program to implement the following unix/linux command (use fork, pipe and exec system call). Your program should block the signal Ctrl-C and Ctrl-\ signal during the execution.
+ls –l | wc–l
+
+#include <iostream>
+#include <string>
+// Required by for routine
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h> // Declaration for exit()
+using namespace std;
+int globalVariable = 2;
+main()
+{
+string sIdentifier;
+int iStackVariable = 20;
+pid_t pID = fork();
+if (pID == 0) // child
+{
+// Code only executed by child process
+sIdentifier = "Child Process: ";
+globalVariable++;
+iStackVariable++;
+}
+else if (pID < 0) // failed to fork
+{
+cerr << "Failed to fork" << endl;
+exit(1);
+// Throw exception
+}
+else // parent
+{
+// Code only executed by parent process
+sIdentifier = "Parent Process:";
+}
+// Code executed by both parent and child.
+cout << sIdentifier;
+cout << " Global variable: " << globalVariable;
+cout << " Stack variable: " << iStackVariable << endl;
+}
+/*
+Compile: g++ -o ForkTest ForkTest.cpp
+ Run: ForkTest 
+Parent Process: Global variable: 2 Stack variable: 20
+ Child Process: Global variable: 3 Stack variable: 21*/

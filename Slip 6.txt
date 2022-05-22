@@ -1,0 +1,157 @@
+Q.2
+A) Write a C program to map a given file in memory and display the contain of mapped file in reverse.
+
+#include "stdio.h" 
+#include "stdlib.h" 
+#include "fcntl.h" 
+#include "sys/stat.h" 
+#include "sys/types.h" 
+#include "sys/mman.h" 
+int main(int argc,char* argv[]) {
+ int fd,size,i;
+ struct stat s1;
+ char *f,ch;
+ if(argc<2) {
+ printf("\n Enter file name on command line"); 
+ exit(0);
+ }
+ fd=open(argv[1],O_RDONLY); 
+if(fd<0) {
+ printf("\n unable to open file");
+ exit(0); 
+}
+ stat(argv[1],&s1);
+ size=s1.st_size;
+ f=(char*)mmap(0,size,PROT_READ,MAP_PRIVATE,fd,0);
+ for(i=size-1;i>=0;i--) {
+ ch=f[i]; printf("%c",ch);
+ } 
+return 0; 
+}
+
+/* o/p:[fy@localhost ~]$ gcc rev.c
+ [fy@localhost ~]$ ./a.out 
+[fy@localhost ~]$ ./a.out 
+v11.txt evahb lahsiv[fy@localhost ~]$ gedit rev.c*/
+
+
+B) Write a C program that behaves like a shell (command interpreter). It has its own prompt say
+“NewShell$”. Any normal shell command is executed from your shell by starting a child process to
+execute the system program corresponding to the command. It should additionally interpret the
+following command.
+i) list f<dirname> - print name of all files in directory
+ii) list n <dirname> - print number of all entries
+iii) list i<dirname> - print name and inode of all files
+
+#include"stdio.h"
+#include"stdlib.h"
+#include"fcntl.h"
+#include"unistd.h"
+#include"sys/types.h"
+#include"sys/stat.h"
+#include"dirent.h"
+void list(char ch,char *dname);
+int main()
+{
+char comm[80],t1[20],t2[20],t3[20],t4[20];
+int n;
+system("Clear");
+while(1)
+{
+printf("Newshell$");
+fflush(stdin);
+gets(comm);
+n=sscanf(comm,"%s%s%s%s",t1,t2,t3,t4);
+switch(n)
+{
+case 1:
+if(!fork())
+{
+execlp(t1,t1,NULL);
+perror(t1);
+}
+break;
+case 2:
+if(!fork())
+{
+execlp(t1,t1,t2,NULL);
+perror(t1);
+}
+break;
+case 3:
+if(!fork())
+{
+if(strcmp(t1,"list")==0)
+list(t2[0],t3);
+else
+{
+execlp(t1,t1,t2,t3,NULL);
+perror(t1);
+}
+}
+break;
+case 4:
+if(!fork())
+{
+execlp(t1,t1,t2,t3,t4,NULL);
+perror(t1);
+}
+break;
+}
+}
+}
+void list(char ch,char *dname)
+{
+struct stat s;
+struct dirent *de;
+DIR *d;
+int c=0;
+d=opendir(dname);
+if(d==NULL)
+{
+printf("Unable to open directory");
+exit(0);
+}
+switch(ch)
+{
+case 'f':
+while((de=readdir(d))!=NULL)
+printf("%s\n",de->d_name);
+break;
+case 'n':
+while((de=readdir(d))!=NULL)
+c=c+1;
+printf("\n no of Entries =>%d",c);
+break;
+case 'i':
+while((de=readdir(d))!=NULL)
+{
+struct stat s;
+char c[100];
+strcpy(c,dname);
+strcat(c,"/");
+strcat(c,de->d_name);
+stat(c,&s);
+printf("\n%s\t%d",de->d_name,s.st_ino);
+}
+break;
+}
+}
+
+/*
+Output=
+[fy@localhost RJ(AOS)]$ ./a.out
+sh: Clear: command not found
+Newshell$list i KGF
+Newshell$
+. 271377030
+.. 403052099
+kgf1.c 271377032Newshell$
+Newshell$list f KGF
+Newshell$.
+..
+kgf1.c
+Newshell$list n KGF
+Newshell$
+no of Entries =>3Newshell$
+Newshell$*/

@@ -1,0 +1,36 @@
+Q.2
+ A) Write a C program that print the exit status of a terminated child process.
+
+#include "stdio.h"
+ #include "stdlib.h"
+ #include "fcntl.h"
+ #include "signal.h" 
+int main() { 
+int n,status;
+ n=fork();
+ if(n==0) {
+ execlp("date","date","-l",NULL);
+ } else { 
+waitpid(n,&status,0);
+ if(WIFEXITED(status));
+ { 
+int e; 
+e=WEXITSTATUS(status); 
+printf("exit status =>%d",e);
+ } 
+} 
+return 0;
+ }
+/*
+ OUTPUT: exit status =>1[fy@localhost ~]$ gedit s20 
+[fy@localhost ~]$ gcc s20.c
+ s20.c: In function ‘main’: s20.c:12:1: warning: incompatible implicit declaration of built-in function
+ ‘execlp’ [enabled by default] 
+execlp("date","date","-l",NULL);
+ ^ 
+[fy@localhost ~]$ ./a.out
+ date: invalid option -- 'l'
+ Try 'date --help' for more information.
+ exit status =>1[fy@localhost ~]$
+*/
+

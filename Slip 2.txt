@@ -1,0 +1,97 @@
+Q.2
+ A) Write a C program that a string as an argument and return all the files that begins with that name in the current directory. For example > ./a.out foo will return all file names that begins with foo
+
+#include "stdio.h"
+#include "stdlib.h"
+#include "unistd.h"
+#include "fcntl.h"
+#include "sys/types.h"
+#include "sys/stat.h"
+#include "dirent.h"
+int main(int argc,char *argv[])
+{
+int c=0;
+DIR *d;
+d=opendir(".");
+struct dirent *dr;
+if(d==NULL)
+{
+printf("unable nto open directory");
+exit(0);
+}
+while((dr=readdir(d))!=NULL)
+{
+printf("%s\t",dr->d_name);
+c++;
+}
+printf("\n No of files=>%d",c);
+closedir(d);
+return 0;
+}
+
+
+/*[fy@localhost Rohit]$ gedit practical3.c
+[fy@localhost Rohit]$ gcc practical3.c
+[fy@localhost Rohit]$ ls -l
+total 36
+-rwxrwxr-x. 1 fy fy 8576 Mar 22 15:56 a.out
+-rw-rw-r--. 1 fy fy 28 Mar 22 15:53 bb.txt
+-rwxrwxr-x. 1 fy fy 126 Mar 22 14:49 bhole
+-rw-rw-r--. 1 fy fy 837 Mar 22 15:23 practical1.c
+-rw-rw-r--. 1 fy fy 660 Mar 22 15:55 practical2.c
+-rw-rw-r--. 1 fy fy 451 Mar 22 15:56 practical3.c
+-rw-rw-r--. 1 fy fy 23 Mar 22 15:14 practicl2.txt
+[fy@localhost Rohit]$ ls -l |wc -l
+8
+[fy@localhost Rohit]$ ./a.out
+. .. practical1.c bhole practical2.c practicl2.txt practical3.c bb.txt a.out
+*/
+
+
+ B] /*Write a C program to demonstrates the different behavior that can be seen with automatic,
+global, register, static and volatile variables (Use setjmp() and longjmp() system call).*/
+
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<setjmp.h>
+
+static void f1(int,int,int,int);
+static void f2();
+int gint;
+jmp_buf buf;
+
+int main()
+{
+  int aint;
+  register int rint;
+  static int sint;
+  volatile int vint;
+  gint=1;
+  aint=2;
+  rint=3;
+  sint=4;
+  vint=5;
+  if(setjmp(buf)!=0)
+  {
+   printf("After LongJmp\n");
+   printf("\n gint=%d\t aint=%d\t rint=%d\tsint=%d\tvint=%d\t\n",gint,aint,rint,sint,vint);
+   exit(0);
+  }
+ 
+  gint=92,aint=93,rint=94,sint=95,vint=96;
+  f1(aint,rint,sint,vint);
+  return 0;
+}
+
+static void f1(int i,int j,int k,int l)
+{
+  printf("\nlnf1");
+  printf("\n gint=%d\t aint=%d\t rint=%d\t sint=%d\t vint=%d\t\n",gint,i,j,k,l);
+  f2();
+}
+
+static void f2()
+{
+ longjmp(buf,1);
+}

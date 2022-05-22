@@ -1,0 +1,111 @@
+Q.2
+ A) Write a C program to display the given message ‘n’ times. (make a use of setjmp and longjmp system call)
+
+#include "stdio.h"
+ #include "stdlib.h"
+ #include "setjmp.h"
+ #include "string.h"
+ int main() {
+ char m[50];
+ int n,c=0;
+ jmp_buf buf;
+ printf("\n enter message to display=>");
+ gets(m);
+ printf("\n enter n no of times=>");
+ scanf("%d",&n);
+ setjmp(buf);
+ printf("%s\n",m);
+ c++;
+ if(c<n)
+ longjmp(buf,1);
+ return 0;
+ } 
+/*
+OUTPUT:
+ [fy@localhost ~]$ gedit message.c
+ [fy@localhost ~]$ gcc message.c
+ [fy@localhost ~]$ ./a.out
+ enter message to display=>hv desai
+ enter n no of times=>5
+ hv desai
+ hv desai
+ hv desai
+ hv desai
+ hv desai
+ [fy@localhost ~]$ */
+
+
+B) Write a C program to display all the files from current directory which are created in a particular month.
+
+#include "fcntl.h"
+#include "unistd.h"
+#include "time.h"
+#include "string.h"
+#include "dirent.h"
+#include "sys/stat.h"
+#include "sys/types.h"
+int main()
+{
+char fn[100];
+DIR *d;
+int num=0;
+struct dirent *de;
+char *s;
+struct stat s1;
+printf("Enter month name=");
+scanf("%s",fn);
+d=opendir(".");
+if(d==NULL)
+{
+printf("Unable to open directory");
+exit(0);
+}
+while((de=readdir(d))!=NULL)
+{
+stat(de->d_name,&s1);
+s=ctime(&s1.st_ctime);
+if(strcasestr(s,fn)!=NULL)
+{
+printf("%s\n",de->d_name);
+num++;
+}
+}
+printf("Number file this month %d",num);
+return 0;
+}
+
+/*
+Output:
+[fy@localhost Rohit AOS]$ gedit sleep5.c
+[fy@localhost Rohit AOS]$ gcc sleep5.c
+[fy@localhost Rohit AOS]$ ls -l
+total 88
+-rwxrwxr-x. 1 fy fy 8832 Apr 5 15:10 a.out
+-rw-rw-r--. 1 fy fy 3 Mar 22 16:16 a.txt
+-rw-rw-r--. 1 fy fy 28 Mar 22 15:53 bb.txt
+-rwxrwxr-x. 1 fy fy 126 Mar 22 14:49 bhole
+-rw-rw-r--. 1 fy fy 8 Mar 22 16:16 b.txt
+-rw-rw-r--. 1 fy fy 23 Mar 22 16:16 c.txt
+-rw-rw-r--. 1 fy fy 2 Mar 22 16:16 d.txt
+-rw-rw-r--. 1 fy fy 14 Mar 22 16:13 p4ab.txt
+-rw-rw-r--. 1 fy fy 14 Mar 22 16:13 p4a.txt
+-rw-rw-r--. 1 fy fy 35 Mar 22 16:13 p4.txt
+-rw-rw-r--. 1 fy fy 2028 Mar 22 16:20 prac4.c
+-rw-rw-r--. 1 fy fy 837 Mar 22 15:23 practical1.c
+-rw-rw-r--. 1 fy fy 660 Mar 22 15:55 practical2.c
+-rw-rw-r--. 1 fy fy 1055 Mar 22 15:59 practical3.c
+-rw-rw-r--. 1 fy fy 23 Mar 22 15:14 practicl2.txt
+-rw-rw-r--. 1 fy fy 1287 Apr 5 13:59 sleep1.c
+-rw-rw-r--. 1 fy fy 2264 Apr 5 14:17 sleep2.c
+-rw-rw-r--. 1 fy fy 1244 Apr 5 14:51 sleep3.c
+-rw-rw-r--. 1 fy fy 919 Apr 5 15:00 sleep4.c
+-rw-rw-r--. 1 fy fy 539 Apr 5 15:10 sleep5.c
+[fy@localhost Rohit AOS]$ ./a.out apr
+Enter month name=apr
+sleep1.c
+sleep2.c
+sleep3.c
+sleep4.c
+sleep5.c
+a.out Number file this month 8
+*/

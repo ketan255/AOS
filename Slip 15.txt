@@ -1,0 +1,122 @@
+Q.2
+ A) Write a C program to Identify the type (Directory, character device, Block device, Regular file, FIFO or pipe, symbolic link or socket) of given file using stat() system call.
+
+#include"stdio.h"
+#include"stdlib.h"
+#include"unistd.h"
+#include"fcntl.h"
+#include"sys/stat.h"
+#include"sys/types.h"
+#include"dirent.h"
+int main(int argc,char* argv[])
+{
+int i;
+struct stat S;
+if(argc<2)
+{
+printf("Ente file name on command line");
+exit(0);
+}
+stat(argv[1],&S);
+if(S_ISREG(S.st_mode))
+printf("File is regular file");
+if(S_ISDIR(S.st_mode))
+printf("File is Directary file");
+if(S_ISSOCK(S.st_mode))
+printf("File is soket file");
+if(S_ISLNK(S.st_mode))
+printf("File is symbolic link file");
+if(S_ISBLK(S.st_mode))
+printf("File is block file");
+if(S_ISCHR(S.st_mode))
+printf("File is character file");
+if(S_ISFIFO(S.st_mode))
+printf("File is pipe file");
+return 0;
+}
+
+/*
+[fy@localhost Rohit]$ gedit acc15.c
+[fy@localhost Rohit]$ gcc acc15.c
+/tmp/cc1yn6pr.o: In function `main':
+acc15.c:(.text+0x119): undefined reference to `S_ISFZFO'
+collect2: error: ld returned 1 exit status
+[fy@localhost Rohit]$ gedit acc15.c
+[fy@localhost Rohit]$ gcc acc15.c
+[fy@localhost Rohit]$ ls -l
+total 84
+-rw-rw-r--. 1 fy fy 837 Mar 29 15:28 acc13.c
+-rw-rw-r--. 1 fy fy 1967 Mar 29 15:27 acc14.c
+-rw-rw-r--. 1 fy fy 689 Mar 29 15:48 acc15.c
+-rwxrwxr-x. 1 fy fy 8520 Mar 29 15:48 a.out
+-rw-rw-r--. 1 fy fy 333 Mar 29 14:32 ass13.c
+-rw-rw-r--. 1 fy fy 3 Mar 22 16:16 a.txt
+-rw-rw-r--. 1 fy fy 28 Mar 22 15:53 bb.txt
+-rwxrwxr-x. 1 fy fy 126 Mar 22 14:49 bhole
+-rw-rw-r--. 1 fy fy 8 Mar 22 16:16 b.txt
+-rw-rw-r--. 1 fy fy 23 Mar 22 16:16 c.txt
+-rw-rw-r--. 1 fy fy 2 Mar 22 16:16 d.txt
+-rw-rw-r--. 1 fy fy 14 Mar 22 16:13 p4ab.txt
+-rw-rw-r--. 1 fy fy 14 Mar 22 16:13 p4a.txt
+-rw-rw-r--. 1 fy fy 35 Mar 22 16:13 p4.txt
+-rw-rw-r--. 1 fy fy 2028 Mar 22 16:20 prac4.c
+-rw-rw-r--. 1 fy fy 837 Mar 22 15:23 practical1.c
+-rw-rw-r--. 1 fy fy 660 Mar 22 15:55 practical2.c
+-rw-rw-r--. 1 fy fy 1055 Mar 22 15:59 practical3.c
+-rw-rw-r--. 1 fy fy 23 Mar 22 15:14 practicl2.txt
+[fy@localhost Rohit]$ ./a.out acc13.c
+File is regular file[fy@localhost Rohit]$ mkdir bb */
+
+
+
+B) Write a C program which creates a child process and child process catches a signal SIGHUP, SIGINT and SIGQUIT. The Parent process send a SIGHUP or SIGINT signal after every 3 seconds, at the end of 15 second parent send SIGQUIT signal to child and child terminates by displaying message "My Papa has Killed me!!!”.
+
+#include "stdio.h" 
+#include "stdlib.h" 
+#include "fcntl.h"
+ #include "signal.h" 
+void sh1() {
+ signal(SIGHUP,sh1);
+ printf("\n SIGHUP cought");
+ }
+ void sh2() { 
+signal(SIGINT,sh2);
+ printf("\n SIGINT,sh2"); 
+} 
+void sh3() { 
+printf("\n My papa has killed me");
+ exit(0); } 
+int main() {
+ int n;
+ n=fork(); 
+signal(SIGHUP,sh1);
+ signal(SIGINT,sh2); 
+signal(SIGQUIT,sh3); 
+if(n<0) {
+ printf("unable to create child"); 
+exit(0); } 
+if(n==0) {
+ signal(SIGHUP,sh1); 
+signal(SIGINT,sh2); 
+signal(SIGQUIT,sh3);
+ for(;;) ; }
+else { 
+printf("\nin parent"); 
+kill(n,SIGINT); sleep(3);
+ kill(n,SIGHUP); sleep(3);
+ kill(n,SIGINT); sleep(3);
+ kill(n,SIGHUP); sleep(3); 
+kill(n,SIGHUP); sleep(3);
+ kill(n,SIGQUIT); sleep(3);
+ wait(); } return 0; }
+
+/* OUTPUT: [fy@localhost ~]$ gedit s15b.c 
+[fy@localhost ~]$ gcc s15b.c 
+[fy@localhost ~]$ ./a.out 
+SIGINT,sh2 
+SIGHUP cought 
+SIGINT,sh2 
+SIGHUP cought 
+SIGHUP cought 
+My papa has killed mein parent[fy@localhost ~]$ gedit s15b.c
+*/
